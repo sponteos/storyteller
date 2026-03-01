@@ -578,7 +578,7 @@ Rules:
 
     if (!response.ok) throw new Error('API error ' + response.status);
 
-    const data = await response.json();
+    const text=await response.text();const data=JSON.parse(text);
     const storyText = data.content[0].text.trim();
 
     // Build a title from the idea
