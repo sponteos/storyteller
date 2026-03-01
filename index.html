@@ -2,169 +2,229 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#6EC6F5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="StoryReader">
 <title>StoryReader ⭐</title>
+
+<!-- PWA Manifest (inline) -->
+<script>
+const manifestData={name:"StoryReader",short_name:"StoryReader",description:"AI-powered reading adventure for kids!",start_url:"./",display:"standalone",background_color:"#FFFBF0",theme_color:"#6EC6F5",orientation:"portrait",icons:[{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="#6EC6F5"/><text y="130" x="96" font-size="110" text-anchor="middle">⭐</text></svg>'),sizes:"192x192",type:"image/svg+xml"},{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#6EC6F5"/><text y="360" x="256" font-size="300" text-anchor="middle">⭐</text></svg>'),sizes:"512x512",type:"image/svg+xml"}]};
+const blob=new Blob([JSON.stringify(manifestData)],{type:"application/json"});
+const manifestURL=URL.createObjectURL(blob);
+document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement("link");l.rel="manifest";l.href=manifestURL;document.head.appendChild(l);});
+</script>
+
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{--sky:#6EC6F5;--sun:#FFD166;--grass:#06D6A0;--coral:#FF6B6B;--purple:#A78BFA;--cream:#FFFBF0;--ink:#2D2A3E}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden}
-  .sky{position:fixed;top:0;left:0;right:0;height:260px;background:linear-gradient(180deg,#B8E4FF 0%,#E8F6FF 100%);z-index:0;overflow:hidden}
+  :root{
+    --sky:#6EC6F5;--sun:#FFD166;--grass:#06D6A0;--coral:#FF6B6B;--purple:#A78BFA;--cream:#FFFBF0;--ink:#2D2A3E;
+    --safe-top:env(safe-area-inset-top, 0px);
+    --safe-bottom:env(safe-area-inset-bottom, 0px);
+    --safe-left:env(safe-area-inset-left, 0px);
+    --safe-right:env(safe-area-inset-right, 0px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overscroll-behavior:none}
+  body{
+    font-family:'Nunito',sans-serif;background:var(--cream);color:var(--ink);
+    min-height:100vh;min-height:-webkit-fill-available;
+    overflow-x:hidden;
+    padding-top:var(--safe-top);
+    padding-bottom:var(--safe-bottom);
+    padding-left:var(--safe-left);
+    padding-right:var(--safe-right);
+  }
+
+  /* ---- SKY ---- */
+  .sky{position:fixed;top:0;left:0;right:0;height:220px;background:linear-gradient(180deg,#B8E4FF 0%,#E8F6FF 100%);z-index:0;overflow:hidden;padding-top:var(--safe-top)}
   .cloud{position:absolute;background:white;border-radius:50px;opacity:.85;animation:drift linear infinite}
   .cloud::before,.cloud::after{content:'';position:absolute;background:white;border-radius:50%}
-  .c1{width:120px;height:40px;top:40px;animation-duration:28s}.c1::before{width:60px;height:60px;top:-30px;left:15px}.c1::after{width:45px;height:45px;top:-20px;left:50px}
-  .c2{width:80px;height:30px;top:80px;animation-duration:35s;animation-delay:-10s}.c2::before{width:40px;height:40px;top:-20px;left:10px}.c2::after{width:30px;height:30px;top:-15px;left:35px}
-  .c3{width:100px;height:35px;top:25px;animation-duration:22s;animation-delay:-5s}.c3::before{width:50px;height:50px;top:-25px;left:12px}.c3::after{width:40px;height:40px;top:-18px;left:45px}
+  .c1{width:100px;height:34px;top:50px;animation-duration:28s}.c1::before{width:50px;height:50px;top:-25px;left:12px}.c1::after{width:38px;height:38px;top:-16px;left:42px}
+  .c2{width:70px;height:26px;top:90px;animation-duration:35s;animation-delay:-10s}.c2::before{width:36px;height:36px;top:-18px;left:9px}.c2::after{width:26px;height:26px;top:-12px;left:30px}
+  .c3{width:90px;height:30px;top:30px;animation-duration:22s;animation-delay:-5s}.c3::before{width:45px;height:45px;top:-22px;left:10px}.c3::after{width:36px;height:36px;top:-16px;left:40px}
   @keyframes drift{from{left:-200px}to{left:110%}}
-  .sun-icon{position:absolute;top:20px;right:60px;width:70px;height:70px;background:var(--sun);border-radius:50%;box-shadow:0 0 0 12px rgba(255,209,102,.3),0 0 0 24px rgba(255,209,102,.1);animation:sun-pulse 3s ease-in-out infinite}
-  @keyframes sun-pulse{0%,100%{box-shadow:0 0 0 12px rgba(255,209,102,.3),0 0 0 24px rgba(255,209,102,.1)}50%{box-shadow:0 0 0 18px rgba(255,209,102,.3),0 0 0 34px rgba(255,209,102,.1)}}
-  .container{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:30px 20px 60px}
-  .header{text-align:center;padding-top:30px;margin-bottom:30px;position:relative}
-  .header h1{font-family:'Fredoka One',cursive;font-size:3rem;color:white;text-shadow:3px 3px 0 rgba(0,0,0,.12);letter-spacing:1px}
-  .header p{font-size:1.1rem;color:rgba(255,255,255,.9);font-weight:700;margin-top:6px}
-  .parent-btn{position:absolute;top:30px;right:0;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);border-radius:14px;padding:8px 14px;cursor:pointer;font-size:1.3rem;transition:all .2s;color:white}
-  .parent-btn:hover{background:rgba(255,255,255,.4)}
-  .screen{display:none}.screen.active{display:block;animation:fadeUp .4s ease}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-  .card{background:white;border-radius:28px;padding:32px;margin-bottom:20px;box-shadow:0 8px 30px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);border:3px solid transparent;transition:border-color .3s}
+  .sun-icon{position:absolute;top:max(20px, calc(var(--safe-top) + 10px));right:20px;width:60px;height:60px;background:var(--sun);border-radius:50%;box-shadow:0 0 0 10px rgba(255,209,102,.3),0 0 0 20px rgba(255,209,102,.1);animation:sun-pulse 3s ease-in-out infinite}
+  @keyframes sun-pulse{0%,100%{box-shadow:0 0 0 10px rgba(255,209,102,.3),0 0 0 20px rgba(255,209,102,.1)}50%{box-shadow:0 0 0 16px rgba(255,209,102,.3),0 0 0 30px rgba(255,209,102,.1)}}
+
+  /* ---- LAYOUT ---- */
+  .container{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:20px 16px 100px}
+
+  /* ---- HEADER ---- */
+  .header{text-align:center;padding-top:max(28px, calc(var(--safe-top) + 12px));margin-bottom:20px;position:relative}
+  .header h1{font-family:'Fredoka One',cursive;font-size:2.6rem;color:white;text-shadow:2px 3px 0 rgba(0,0,0,.12);letter-spacing:1px}
+  .header p{font-size:1rem;color:rgba(255,255,255,.9);font-weight:700;margin-top:4px}
+  .parent-btn{position:absolute;top:max(28px, calc(var(--safe-top) + 12px));right:0;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);border-radius:14px;padding:10px 14px;cursor:pointer;font-size:1.3rem;transition:all .2s;color:white;min-width:48px;min-height:48px;display:flex;align-items:center;justify-content:center}
+  .parent-btn:active{background:rgba(255,255,255,.5);transform:scale(.93)}
+
+  /* ---- SCREENS ---- */
+  .screen{display:none}
+  .screen.active{display:block;animation:fadeUp .35s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ---- CARDS ---- */
+  .card{background:white;border-radius:24px;padding:24px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,.07),0 1px 6px rgba(0,0,0,.04);border:2.5px solid transparent;transition:border-color .3s}
   .card.active-card{border-color:var(--sky)}
-  .card-title{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:10px}
-  .card-title .icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+  .card-title{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .card-title .icon{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
   .icon-blue{background:#EFF8FF}.icon-yellow{background:#FFFBEF}.icon-purple{background:#F5F0FF}.icon-green{background:#EFFFF9}.icon-orange{background:#FFF7EF}
-  .btn{font-family:'Fredoka One',cursive;font-size:1.2rem;border:none;border-radius:18px;padding:14px 30px;cursor:pointer;transition:all .2s ease;letter-spacing:.5px}
-  .btn:active{transform:scale(.96)}
-  .btn-primary{background:linear-gradient(135deg,var(--coral),#FF4F7B);color:white;box-shadow:0 6px 20px rgba(255,107,107,.4);width:100%}
-  .btn-primary:hover{box-shadow:0 8px 26px rgba(255,107,107,.55);transform:translateY(-1px)}
-  .btn-secondary{background:linear-gradient(135deg,var(--grass),#00B896);color:white;box-shadow:0 6px 20px rgba(6,214,160,.35);width:100%;margin-top:10px}
-  .btn-secondary:hover{box-shadow:0 8px 26px rgba(6,214,160,.5);transform:translateY(-1px)}
-  .btn-purple{background:linear-gradient(135deg,var(--purple),#7C3AED);color:white;box-shadow:0 6px 20px rgba(167,139,250,.4);width:100%}
-  .btn-purple:hover{box-shadow:0 8px 26px rgba(167,139,250,.55);transform:translateY(-1px)}
-  .btn-sky{background:linear-gradient(135deg,var(--sky),#3BA8E0);color:white;box-shadow:0 6px 20px rgba(110,198,245,.4);width:100%;margin-top:10px}
+
+  /* ---- BUTTONS ---- */
+  .btn{font-family:'Fredoka One',cursive;font-size:1.15rem;border:none;border-radius:18px;padding:16px 28px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;letter-spacing:.4px;min-height:54px;touch-action:manipulation}
+  .btn:active{transform:scale(.95)}
+  .btn-primary{background:linear-gradient(135deg,var(--coral),#FF4F7B);color:white;box-shadow:0 5px 18px rgba(255,107,107,.4);width:100%}
+  .btn-secondary{background:linear-gradient(135deg,var(--grass),#00B896);color:white;box-shadow:0 5px 18px rgba(6,214,160,.35);width:100%;margin-top:10px}
+  .btn-purple{background:linear-gradient(135deg,var(--purple),#7C3AED);color:white;box-shadow:0 5px 18px rgba(167,139,250,.4);width:100%}
+  .btn-sky{background:linear-gradient(135deg,var(--sky),#3BA8E0);color:white;box-shadow:0 5px 18px rgba(110,198,245,.4);width:100%;margin-top:10px}
+  .btn-ghost{background:#F0F0F0;color:#888;width:100%;margin-top:10px}
   .btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
 
-  /* STREAK BAR */
-  .streak-bar{display:flex;gap:12px;margin-bottom:16px}
-  .streak-chip{flex:1;background:white;border-radius:18px;padding:14px 10px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.07);border:2px solid transparent}
-  .streak-chip .chip-num{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--ink);line-height:1}
-  .streak-chip .chip-label{font-size:.75rem;font-weight:800;color:#aaa;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+  /* ---- INSTALL BANNER ---- */
+  .install-banner{background:linear-gradient(135deg,#2D2A3E,#3D3A5E);border-radius:20px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;color:white;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+  .install-banner .ib-icon{font-size:2.2rem;flex-shrink:0}
+  .install-banner .ib-text{flex:1}
+  .install-banner .ib-title{font-family:'Fredoka One',cursive;font-size:1.1rem;margin-bottom:2px}
+  .install-banner .ib-sub{font-size:.82rem;opacity:.75;font-weight:600}
+  .install-banner .ib-btn{background:var(--sun);color:var(--ink);border:none;border-radius:12px;padding:8px 14px;font-family:'Fredoka One',cursive;font-size:.9rem;cursor:pointer;flex-shrink:0;min-height:40px}
+  .install-banner .ib-close{background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer;padding:4px;min-width:32px;min-height:32px}
+
+  /* ---- STREAK BAR ---- */
+  .streak-bar{display:flex;gap:10px;margin-bottom:14px}
+  .streak-chip{flex:1;background:white;border-radius:18px;padding:14px 10px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.06);border:2px solid transparent}
+  .streak-chip .chip-num{font-family:'Fredoka One',cursive;font-size:1.9rem;color:var(--ink);line-height:1}
+  .streak-chip .chip-label{font-size:.72rem;font-weight:800;color:#aaa;margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
   .streak-chip.hot{border-color:var(--coral);background:linear-gradient(135deg,#FFF5F5,#FFF0F0)}
   .streak-chip.hot .chip-num{color:var(--coral)}
   .streak-chip.gold{border-color:var(--sun);background:linear-gradient(135deg,#FFFDF0,#FFFBE8)}
   .streak-chip.gold .chip-num{color:#D4900A}
 
-  /* BADGES */
-  .badge-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
-  .badge{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 14px;border-radius:16px;border:2px solid #eee;background:#fafafa;min-width:70px;transition:all .3s}
+  /* ---- BADGES ---- */
+  .badge-row{display:flex;flex-wrap:wrap;gap:8px}
+  .badge{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 12px;border-radius:14px;border:2px solid #eee;background:#fafafa;min-width:64px}
   .badge.earned{border-color:var(--sun);background:linear-gradient(135deg,#FFFDF0,#FFF8E0)}
-  .badge .badge-icon{font-size:1.8rem;filter:grayscale(1);opacity:.3;transition:all .3s}
-  .badge.earned .badge-icon{filter:none;opacity:1;animation:badge-pop .4s cubic-bezier(.34,1.56,.64,1)}
-  @keyframes badge-pop{from{transform:scale(.5)}to{transform:scale(1)}}
-  .badge .badge-name{font-size:.72rem;font-weight:800;color:#bbb;text-align:center}
+  .badge .badge-icon{font-size:1.7rem;filter:grayscale(1);opacity:.3;transition:all .3s}
+  .badge.earned .badge-icon{filter:none;opacity:1}
+  .badge .badge-name{font-size:.68rem;font-weight:800;color:#bbb;text-align:center}
   .badge.earned .badge-name{color:#D4900A}
 
-  /* HISTORY */
+  /* ---- HISTORY ---- */
   .history-list{display:flex;flex-direction:column;gap:8px}
-  .history-item{background:linear-gradient(135deg,#F8F8FF,#F0F0FF);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:12px;font-size:.95rem;font-weight:700;color:var(--ink)}
-  .history-item .h-date{font-size:.78rem;color:#aaa;font-weight:600;white-space:nowrap}
+  .history-item{background:linear-gradient(135deg,#F8F8FF,#F0F0FF);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:10px;font-size:.92rem;font-weight:700;color:var(--ink)}
+  .history-item .h-date{font-size:.75rem;color:#aaa;font-weight:600;white-space:nowrap}
   .history-item .h-idea{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .history-empty{color:#ccc;font-style:italic;font-weight:600;text-align:center;padding:16px 0}
+  .history-empty{color:#ccc;font-style:italic;font-weight:600;text-align:center;padding:14px 0;font-size:.95rem}
 
-  /* IDEA SCREEN */
-  .idea-hero{text-align:center;padding:10px 0 20px}
-  .idea-hero .big-emoji{font-size:4.5rem;display:block;margin-bottom:10px;animation:float 3s ease-in-out infinite}
-  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-  .idea-hero h2{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--ink);margin-bottom:6px}
-  .idea-hero p{font-size:1rem;color:#666;font-weight:600;line-height:1.5}
-  .mic-big-btn{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--coral),#FF4F7B);border:none;cursor:pointer;margin:16px auto;display:block;font-size:2.8rem;box-shadow:0 8px 30px rgba(255,107,107,.45);transition:all .2s ease}
-  .mic-big-btn:hover{transform:scale(1.05)}
+  /* ---- IDEA SCREEN ---- */
+  .idea-hero{text-align:center;padding:6px 0 16px}
+  .idea-hero .big-emoji{font-size:4rem;display:block;margin-bottom:8px;animation:float 3s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .idea-hero h2{font-family:'Fredoka One',cursive;font-size:1.65rem;color:var(--ink);margin-bottom:5px}
+  .idea-hero p{font-size:.95rem;color:#666;font-weight:600;line-height:1.5}
+  .mic-big-btn{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--coral),#FF4F7B);border:none;cursor:pointer;margin:14px auto;display:block;font-size:2.5rem;box-shadow:0 7px 24px rgba(255,107,107,.45);transition:all .15s ease;touch-action:manipulation}
+  .mic-big-btn:active{transform:scale(.93)}
   .mic-big-btn.recording{animation:mic-glow 1s ease-in-out infinite}
-  @keyframes mic-glow{0%,100%{box-shadow:0 8px 30px rgba(255,107,107,.45),0 0 0 0 rgba(255,107,107,.4)}50%{box-shadow:0 8px 30px rgba(255,107,107,.45),0 0 0 20px rgba(255,107,107,0)}}
-  .mic-hint{text-align:center;font-size:.95rem;font-weight:700;color:#aaa;margin-bottom:8px;min-height:22px}
-  .idea-heard{background:linear-gradient(135deg,#F0F8FF,#EFF8FF);border:2px solid var(--sky);border-radius:18px;padding:16px 20px;font-size:1.1rem;font-weight:700;color:var(--ink);min-height:58px;text-align:center;display:flex;align-items:center;justify-content:center;margin:14px 0}
+  @keyframes mic-glow{0%,100%{box-shadow:0 7px 24px rgba(255,107,107,.45),0 0 0 0 rgba(255,107,107,.4)}50%{box-shadow:0 7px 24px rgba(255,107,107,.45),0 0 0 18px rgba(255,107,107,0)}}
+  .mic-hint{text-align:center;font-size:.9rem;font-weight:700;color:#bbb;margin-bottom:6px;min-height:20px}
+  .idea-heard{background:linear-gradient(135deg,#F0F8FF,#EFF8FF);border:2px solid var(--sky);border-radius:16px;padding:14px 18px;font-size:1.05rem;font-weight:700;color:var(--ink);min-height:54px;text-align:center;display:flex;align-items:center;justify-content:center;margin:12px 0}
   .idea-heard.empty{color:#bbb;font-style:italic;font-weight:600}
-  .divider{text-align:center;color:#ccc;font-size:.85rem;font-weight:700;margin:8px 0}
-  .idea-input{width:100%;padding:14px 18px;border-radius:16px;border:2px solid #e0e0e0;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);outline:none;transition:border-color .2s;background:white}
+  .divider{text-align:center;color:#ccc;font-size:.82rem;font-weight:700;margin:8px 0}
+  .idea-input{width:100%;padding:14px 16px;border-radius:14px;border:2px solid #e0e0e0;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);outline:none;transition:border-color .2s;background:white;-webkit-appearance:none}
   .idea-input:focus{border-color:var(--sky)}
 
-  /* LOADING */
-  .loading-screen{text-align:center;padding:40px 20px}
-  .loading-screen h2{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--ink);margin-bottom:10px}
-  .loading-idea-text{color:#888;font-weight:700;font-size:1rem;margin-bottom:28px;font-style:italic}
-  .book-loader{font-size:5rem;display:block;margin:0 auto 20px;animation:book-bounce .6s ease-in-out infinite alternate}
-  @keyframes book-bounce{from{transform:translateY(0) rotate(-5deg)}to{transform:translateY(-15px) rotate(5deg)}}
-  .loading-dots{display:flex;justify-content:center;gap:10px;margin-bottom:16px}
-  .dot{width:14px;height:14px;border-radius:50%;background:var(--coral);animation:dot-pop 1.2s ease-in-out infinite}
+  /* ---- LOADING ---- */
+  .loading-screen{text-align:center;padding:36px 16px}
+  .loading-screen h2{font-family:'Fredoka One',cursive;font-size:1.9rem;color:var(--ink);margin-bottom:8px}
+  .loading-idea-text{color:#888;font-weight:700;font-size:.95rem;margin-bottom:24px;font-style:italic}
+  .book-loader{font-size:4.5rem;display:block;margin:0 auto 18px;animation:book-bounce .6s ease-in-out infinite alternate}
+  @keyframes book-bounce{from{transform:translateY(0) rotate(-5deg)}to{transform:translateY(-14px) rotate(5deg)}}
+  .loading-dots{display:flex;justify-content:center;gap:10px;margin-bottom:14px}
+  .dot{width:13px;height:13px;border-radius:50%;background:var(--coral);animation:dot-pop 1.2s ease-in-out infinite}
   .dot:nth-child(2){background:var(--sun);animation-delay:.2s}.dot:nth-child(3){background:var(--grass);animation-delay:.4s}
   @keyframes dot-pop{0%,80%,100%{transform:scale(.7);opacity:.5}40%{transform:scale(1.2);opacity:1}}
-  .loading-msg{font-size:1rem;color:#aaa;font-style:italic}
+  .loading-msg{font-size:.95rem;color:#aaa;font-style:italic}
 
-  /* READING */
-  .story-box{background:linear-gradient(135deg,#FFFBF0,#FFF8E8);border:2px dashed #FFD166;border-radius:18px;padding:24px;line-height:2.2;font-size:1.2rem;font-weight:600;min-height:100px;color:var(--ink)}
-  .word{display:inline;padding:2px 3px;border-radius:6px;transition:all .25s ease}
+  /* ---- READING ---- */
+  .story-box{background:linear-gradient(135deg,#FFFBF0,#FFF8E8);border:2px dashed #FFD166;border-radius:16px;padding:20px;line-height:2.1;font-size:1.15rem;font-weight:600;min-height:80px;color:var(--ink)}
+  .word{display:inline;padding:2px 2px;border-radius:5px;transition:all .2s ease}
   .word.read{background:#DCFCE7;color:#166534}
-  .word.current{background:var(--sun);color:var(--ink);border-radius:8px;box-shadow:0 2px 8px rgba(255,209,102,.6);animation:bounce-word .4s ease}
-  @keyframes bounce-word{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
-  .progress-wrap{background:#F0F0F0;border-radius:20px;height:14px;margin:18px 0 6px;overflow:hidden}
+  .word.current{background:var(--sun);color:var(--ink);border-radius:7px;box-shadow:0 2px 6px rgba(255,209,102,.6);animation:bounce-word .35s ease}
+  @keyframes bounce-word{0%{transform:scale(1)}50%{transform:scale(1.14)}100%{transform:scale(1)}}
+  .progress-wrap{background:#F0F0F0;border-radius:20px;height:12px;margin:16px 0 5px;overflow:hidden}
   .progress-bar{height:100%;background:linear-gradient(90deg,var(--grass),var(--sky));border-radius:20px;width:0%;transition:width .4s ease}
-  .progress-label{font-size:.85rem;font-weight:700;color:#888;text-align:right}
-  .mic-status{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1rem;padding:10px 16px;border-radius:12px;margin-bottom:14px;background:#F5F5F5;color:#888;transition:all .3s}
+  .progress-label{font-size:.82rem;font-weight:700;color:#aaa;text-align:right}
+  .mic-status{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.95rem;padding:10px 14px;border-radius:12px;margin-bottom:12px;background:#F5F5F5;color:#888;transition:all .3s}
   .mic-status.listening{background:#FFF0F0;color:var(--coral)}
-  .mic-dot{width:12px;height:12px;border-radius:50%;background:#ccc;flex-shrink:0;transition:all .3s}
+  .mic-dot{width:11px;height:11px;border-radius:50%;background:#ccc;flex-shrink:0;transition:all .3s}
   .mic-dot.active{background:var(--coral);animation:mic-pulse 1s ease-in-out infinite}
   @keyframes mic-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.4);opacity:.7}}
-  .heard-box{font-size:.88rem;color:#999;font-style:italic;min-height:22px;margin-top:8px}
-  .prize-display{background:linear-gradient(135deg,#FFF0FF,#F0F0FF);border:2px solid var(--purple);border-radius:18px;padding:16px 20px;display:flex;align-items:center;gap:14px;font-size:1.05rem;font-weight:800;color:#5B21B6}
-  .prize-emoji-display{font-size:2rem}
+  .heard-box{font-size:.84rem;color:#aaa;font-style:italic;min-height:20px;margin-top:6px}
+  .prize-display{background:linear-gradient(135deg,#FFF0FF,#F0F0FF);border:2px solid var(--purple);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:12px;font-size:1rem;font-weight:800;color:#5B21B6}
+  .prize-emoji-display{font-size:1.9rem}
 
-  /* PARENT SETTINGS */
-  .setting-row{margin-bottom:22px}
-  .setting-label{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  /* ---- PARENT SETTINGS ---- */
+  .setting-row{margin-bottom:20px}
+  .setting-label{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--ink);margin-bottom:9px;display:flex;align-items:center;gap:7px}
   .option-group{display:flex;flex-wrap:wrap;gap:8px}
-  .option-btn{font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;padding:8px 16px;border-radius:12px;border:2px solid #e0e0e0;background:white;cursor:pointer;transition:all .2s;color:#666}
+  .option-btn{font-family:'Nunito',sans-serif;font-weight:800;font-size:.88rem;padding:10px 16px;border-radius:12px;border:2px solid #e0e0e0;background:white;cursor:pointer;transition:all .15s;color:#666;min-height:44px;touch-action:manipulation}
+  .option-btn:active{transform:scale(.95)}
   .option-btn.selected{border-color:var(--purple);background:linear-gradient(135deg,#F5F0FF,#EDE8FF);color:#5B21B6}
-  .setting-input{width:100%;padding:12px 16px;border-radius:14px;border:2px solid #e0e0e0;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);outline:none;transition:border-color .2s}
+  .setting-input{width:100%;padding:14px 16px;border-radius:14px;border:2px solid #e0e0e0;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);outline:none;transition:border-color .2s;-webkit-appearance:none}
   .setting-input:focus{border-color:var(--purple)}
-  .prize-preview{background:linear-gradient(135deg,#FFF0FF,#F0F0FF);border:2px solid var(--purple);border-radius:14px;padding:12px 16px;font-weight:800;color:#5B21B6;margin-top:10px;font-size:1rem;min-height:44px}
+  .prize-preview{background:linear-gradient(135deg,#FFF0FF,#F0F0FF);border:2px solid var(--purple);border-radius:14px;padding:12px 16px;font-weight:800;color:#5B21B6;margin-top:8px;font-size:.95rem;min-height:42px}
 
-  /* PIN MODAL */
-  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
-  .modal.show{display:flex;animation:fadeIn .3s ease}
+  /* ---- PIN MODAL ---- */
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:20px;padding-bottom:max(20px, var(--safe-bottom))}
+  .modal.show{display:flex;animation:fadeIn .25s ease}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  .modal-card{background:white;border-radius:28px;padding:36px 32px;text-align:center;max-width:360px;width:90%;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 20px 60px rgba(0,0,0,.2)}
-  @keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
-  .modal-card h3{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--ink);margin-bottom:6px}
-  .modal-card p{color:#888;font-weight:700;font-size:.95rem;margin-bottom:20px}
-  .pin-dots{display:flex;justify-content:center;gap:12px;margin-bottom:20px}
-  .pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid #ddd;background:white;transition:all .2s}
+  .modal-card{background:white;border-radius:28px;padding:32px 28px;text-align:center;max-width:340px;width:100%;animation:slideUp .3s cubic-bezier(.34,1.4,.64,1);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .modal-card h3{font-family:'Fredoka One',cursive;font-size:1.55rem;color:var(--ink);margin-bottom:5px}
+  .modal-card p{color:#888;font-weight:700;font-size:.92rem;margin-bottom:18px}
+  .pin-dots{display:flex;justify-content:center;gap:14px;margin-bottom:18px}
+  .pin-dot{width:17px;height:17px;border-radius:50%;border:2px solid #ddd;background:white;transition:all .2s}
   .pin-dot.filled{background:var(--purple);border-color:var(--purple)}
   .pin-dot.error{background:var(--coral);border-color:var(--coral);animation:shake .3s ease}
-  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-  .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:240px;margin:0 auto 16px}
-  .pin-key{font-family:'Fredoka One',cursive;font-size:1.4rem;padding:14px;border:none;border-radius:16px;background:#F5F5F5;cursor:pointer;transition:all .15s;color:var(--ink)}
-  .pin-key:hover{background:#EEE}.pin-key:active{transform:scale(.92);background:#E0E0E0}
-  .pin-error-msg{color:var(--coral);font-weight:800;font-size:.9rem;min-height:20px;margin-bottom:8px}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:240px;margin:0 auto 14px}
+  .pin-key{font-family:'Fredoka One',cursive;font-size:1.4rem;padding:16px;border:none;border-radius:16px;background:#F5F5F5;cursor:pointer;transition:all .12s;color:var(--ink);min-height:56px;touch-action:manipulation}
+  .pin-key:active{transform:scale(.9);background:#E0E0E0}
+  .pin-error-msg{color:var(--coral);font-weight:800;font-size:.88rem;min-height:20px;margin-bottom:8px}
 
-  /* NEW BADGE MODAL */
-  .badge-modal-card{background:white;border-radius:28px;padding:40px 32px;text-align:center;max-width:340px;width:90%;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 20px 60px rgba(0,0,0,.2)}
-  .badge-modal-card .bm-icon{font-size:5rem;display:block;margin-bottom:12px;animation:badge-spin .6s ease}
-  @keyframes badge-spin{from{transform:rotate(-20deg) scale(.5)}to{transform:rotate(0) scale(1)}}
-  .badge-modal-card h3{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--ink);margin-bottom:6px}
-  .badge-modal-card p{color:#888;font-weight:700;font-size:1rem}
+  /* ---- BADGE MODAL ---- */
+  .badge-modal-card{background:white;border-radius:28px;padding:38px 28px;text-align:center;max-width:320px;width:100%;animation:slideUp .4s cubic-bezier(.34,1.4,.64,1);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  .badge-modal-card .bm-icon{font-size:4.5rem;display:block;margin-bottom:10px}
+  .badge-modal-card h3{font-family:'Fredoka One',cursive;font-size:1.7rem;color:var(--ink);margin-bottom:5px}
+  .badge-modal-card p{color:#888;font-weight:700;font-size:.95rem}
 
-  /* CELEBRATION */
-  .celebration{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
-  .celebration.show{display:flex;animation:fadeIn .4s ease}
-  .celebrate-card{background:white;border-radius:32px;padding:44px 36px;text-align:center;max-width:400px;width:90%;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 30px 80px rgba(0,0,0,.2)}
-  .celebrate-card .cel-emoji{font-size:4.5rem;margin-bottom:14px}
-  .celebrate-card h2{font-family:'Fredoka One',cursive;font-size:2.2rem;color:var(--ink);margin-bottom:8px}
-  .celebrate-card p{font-size:1.1rem;font-weight:700;color:#666;margin-bottom:6px}
-  .prize-reveal{background:linear-gradient(135deg,var(--sun),#FFA500);border-radius:16px;padding:12px 18px;font-size:1.2rem;font-weight:800;color:white;margin:14px 0 20px;box-shadow:0 6px 20px rgba(255,165,0,.4)}
-  .streak-reveal{background:linear-gradient(135deg,var(--coral),#FF4F7B);border-radius:14px;padding:10px 16px;font-size:1rem;font-weight:800;color:white;margin-bottom:10px}
+  /* ---- CELEBRATION ---- */
+  .celebration{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bottom)}
+  .celebration.show{display:flex;animation:fadeIn .3s ease}
+  .celebrate-card{background:white;border-radius:28px 28px 0 0;padding:36px 28px calc(28px + var(--safe-bottom));text-align:center;width:100%;max-width:600px;animation:slideUp .4s cubic-bezier(.34,1.2,.64,1);box-shadow:0 -10px 40px rgba(0,0,0,.15)}
+  .celebrate-card .cel-emoji{font-size:4rem;margin-bottom:10px;display:block}
+  .celebrate-card h2{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--ink);margin-bottom:6px}
+  .celebrate-card p{font-size:1rem;font-weight:700;color:#666;margin-bottom:5px}
+  .prize-reveal{background:linear-gradient(135deg,var(--sun),#FFA500);border-radius:14px;padding:11px 16px;font-size:1.15rem;font-weight:800;color:white;margin:12px 0 18px;box-shadow:0 5px 18px rgba(255,165,0,.4)}
+  .streak-reveal{background:linear-gradient(135deg,var(--coral),#FF4F7B);border-radius:12px;padding:9px 14px;font-size:.95rem;font-weight:800;color:white;margin-bottom:8px}
 
+  /* ---- STARS ---- */
   .stars{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden}
-  .star{position:absolute;color:var(--sun);opacity:.15;animation:twinkle 3s ease-in-out infinite}
-  @keyframes twinkle{0%,100%{opacity:.1;transform:scale(1)}50%{opacity:.3;transform:scale(1.3)}}
-  @media(max-width:480px){.header h1{font-size:2.2rem}.card{padding:22px 16px}.story-box{font-size:1.05rem}.pin-pad{max-width:200px}.streak-bar{gap:8px}}
+  .star{position:absolute;color:var(--sun);opacity:.12;animation:twinkle 3s ease-in-out infinite}
+  @keyframes twinkle{0%,100%{opacity:.08;transform:scale(1)}50%{opacity:.25;transform:scale(1.3)}}
+
+  /* ---- RESPONSIVE ---- */
+  @media(min-width:480px){
+    .container{padding:24px 24px 100px}
+    .header h1{font-size:3rem}
+    .story-box{font-size:1.2rem}
+    .card{padding:28px}
+  }
+  @media(min-width:600px){
+    .streak-bar{gap:14px}
+    .streak-chip .chip-num{font-size:2.2rem}
+  }
 </style>
 </head>
 <body>
@@ -185,6 +245,17 @@
   <!-- SCREEN 1: IDEA -->
   <div class="screen active" id="screenIdea">
 
+    <!-- Install banner (shown only when installable) -->
+    <div class="install-banner" id="installBanner" style="display:none">
+      <span class="ib-icon">📲</span>
+      <div class="ib-text">
+        <div class="ib-title">Add to Home Screen</div>
+        <div class="ib-sub">Launch like a real app — no browser bar!</div>
+      </div>
+      <button class="ib-btn" onclick="installApp()">Install</button>
+      <button class="ib-close" onclick="dismissInstall()">✕</button>
+    </div>
+
     <!-- Streak bar -->
     <div class="streak-bar">
       <div class="streak-chip hot" id="streakChip">
@@ -203,13 +274,13 @@
         <h2>What's your story about?</h2>
         <p>Press the mic button and talk about what you want your story to be!</p>
       </div>
-      <p class="mic-hint" id="ideaMicHint">Tap the mic to start — tap again when you're done talking!</p>
+      <p class="mic-hint" id="ideaMicHint">Tap the mic to start — tap again when you're done!</p>
       <button class="mic-big-btn" id="ideaMicBtn" onclick="toggleIdeaRecording()">🎤</button>
       <div class="idea-heard empty" id="ideaHeard">Your idea will appear here...</div>
       <div class="divider">— or type your idea instead —</div>
-      <input class="idea-input" type="text" id="ideaTyped" placeholder="e.g. a dragon who loves to bake cookies..." oninput="handleTypedIdea()" />
-      <button class="btn btn-purple" id="makeStoryBtn" onclick="generateStory()" disabled style="margin-top:18px">✨ Make my story!</button>
-      <button class="btn btn-secondary" onclick="clearIdea()">🔄 Try again</button>
+      <input class="idea-input" type="text" id="ideaTyped" placeholder="e.g. a dragon who loves to bake cookies..." oninput="handleTypedIdea()" autocomplete="off" autocorrect="off" autocapitalize="sentences" />
+      <button class="btn btn-purple" id="makeStoryBtn" onclick="generateStory()" disabled style="margin-top:16px">✨ Make my story!</button>
+      <button class="btn btn-ghost" onclick="clearIdea()">🔄 Try again</button>
     </div>
 
     <!-- Trophies -->
@@ -224,7 +295,7 @@
       <div class="history-list" id="historyList"></div>
     </div>
 
-    <p style="text-align:center;color:#bbb;font-size:.82rem;margin-top:4px;">💡 Works best in <strong>Google Chrome</strong></p>
+    <p style="text-align:center;color:#ccc;font-size:.78rem;margin-top:4px;padding-bottom:8px">💡 Works best in <strong>Google Chrome</strong> on Android, or <strong>Safari</strong> on iPhone</p>
   </div>
 
   <!-- SCREEN 2: LOADING -->
@@ -261,7 +332,7 @@
       <div class="heard-box" id="heardBox">Your words will appear here as you read...</div>
       <button class="btn btn-primary" id="startBtn" onclick="startReading()">🎤 Start Reading!</button>
       <button class="btn btn-secondary" id="resetBtn" onclick="resetReading()" style="display:none">🔄 Start Over</button>
-      <button class="btn" onclick="goToIdeaScreen()" style="margin-top:10px;background:#f0f0f0;color:#888;width:100%">← New Story Idea</button>
+      <button class="btn btn-ghost" onclick="goToIdeaScreen()">← New Story Idea</button>
     </div>
   </div>
 
@@ -289,13 +360,13 @@
       </div>
       <div class="setting-row">
         <div class="setting-label">🎁 Prize</div>
-        <input class="setting-input" type="text" id="prizeInput" placeholder="e.g. 30 minutes of Minecraft, a cookie..." oninput="updatePrizePreview()" />
+        <input class="setting-input" type="text" id="prizeInput" placeholder="e.g. 30 minutes of Minecraft, a cookie..." oninput="updatePrizePreview()" autocomplete="off" />
         <div class="prize-preview" id="prizePreview">🎁 Prize will show here</div>
       </div>
       <div class="setting-row">
-        <div class="setting-label">🔒 Parent PIN <span style="font-size:.8rem;color:#aaa;font-family:'Nunito',sans-serif;font-weight:600">(4 digits)</span></div>
+        <div class="setting-label">🔒 Parent PIN <span style="font-size:.78rem;color:#aaa;font-family:'Nunito',sans-serif;font-weight:600">(4 digits)</span></div>
         <input class="setting-input" type="password" id="pinInput" placeholder="Enter a new 4-digit PIN" maxlength="4" pattern="[0-9]*" inputmode="numeric" />
-        <p style="font-size:.82rem;color:#aaa;font-weight:600;margin-top:6px;">Leave blank to keep your current PIN. Default is 1234.</p>
+        <p style="font-size:.8rem;color:#bbb;font-weight:600;margin-top:6px">Leave blank to keep current PIN. Default is 1234.</p>
       </div>
       <button class="btn btn-purple" onclick="saveSettings()">💾 Save Settings</button>
       <button class="btn btn-sky" onclick="showScreen('screenIdea')">← Back to App</button>
@@ -326,11 +397,11 @@
       <button class="pin-key" onclick="pinPress('0')">0</button>
       <button class="pin-key" onclick="pinBackspace()">⌫</button>
     </div>
-    <button class="btn" onclick="closePinModal()" style="background:#f0f0f0;color:#888;width:100%;font-size:1rem;padding:12px">Cancel</button>
+    <button class="btn btn-ghost" onclick="closePinModal()" style="font-size:1rem;padding:14px">Cancel</button>
   </div>
 </div>
 
-<!-- NEW BADGE MODAL -->
+<!-- BADGE MODAL -->
 <div class="modal" id="badgeModal">
   <div class="badge-modal-card">
     <span class="bm-icon" id="badgeModalIcon">🥉</span>
@@ -340,16 +411,16 @@
   </div>
 </div>
 
-<!-- CELEBRATION -->
+<!-- CELEBRATION (slides up from bottom like a native sheet) -->
 <div class="celebration" id="celebration">
   <div class="celebrate-card">
-    <div class="cel-emoji">🎉</div>
+    <span class="cel-emoji">🎉</span>
     <h2>Amazing job!</h2>
     <p>You read the whole story!</p>
-    <div class="streak-reveal" id="streakReveal">🔥 1 day streak!</div>
+    <div class="streak-reveal" id="streakReveal">🌟 Story complete!</div>
     <div class="prize-reveal" id="prizeReveal">🍦 You earned: an ice cream cone!</div>
-    <p style="font-size:.9rem;color:#aaa;margin-bottom:18px;">Show this to a grown-up!</p>
-    <button class="btn btn-purple" onclick="closeAndNewStory()" style="width:100%">Tell a New Story 🎙️</button>
+    <p style="font-size:.85rem;color:#bbb;margin-bottom:16px">Show this to a grown-up!</p>
+    <button class="btn btn-purple" onclick="closeAndNewStory()">Tell a New Story 🎙️</button>
   </div>
 </div>
 
@@ -363,48 +434,24 @@ function loadSettings(){try{const s=localStorage.getItem('sr_settings');if(s)set
 function saveSettingsToStorage(){try{localStorage.setItem('sr_settings',JSON.stringify(settings));}catch(e){}}
 
 // ============================================================
-// READING STATS
+// STATS
 // ============================================================
 const DEFAULT_STATS={totalStories:0,streak:0,lastReadDate:null,history:[]};
 let stats={...DEFAULT_STATS};
-
-function loadStats(){
-  try{
-    const s=localStorage.getItem('sr_stats');
-    if(s) stats={...DEFAULT_STATS,...JSON.parse(s)};
-  }catch(e){}
-}
-
-function saveStats(){
-  try{localStorage.setItem('sr_stats',JSON.stringify(stats));}catch(e){}
-}
+function loadStats(){try{const s=localStorage.getItem('sr_stats');if(s)stats={...DEFAULT_STATS,...JSON.parse(s)};}catch(e){}}
+function saveStats(){try{localStorage.setItem('sr_stats',JSON.stringify(stats));}catch(e){}}
 
 function recordStoryFinished(ideaText){
   const today=new Date().toDateString();
-  // Update streak
-  if(stats.lastReadDate===today){
-    // Already read today — streak stays the same
-  } else if(stats.lastReadDate===new Date(Date.now()-86400000).toDateString()){
-    // Read yesterday — extend streak
-    stats.streak++;
-  } else {
-    // Gap or first time — reset to 1
-    stats.streak=1;
-  }
+  const yesterday=new Date(Date.now()-86400000).toDateString();
+  if(stats.lastReadDate===today){}
+  else if(stats.lastReadDate===yesterday)stats.streak++;
+  else stats.streak=1;
   stats.lastReadDate=today;
   stats.totalStories++;
-
-  // Add to history (keep last 10)
-  stats.history.unshift({
-    idea: ideaText,
-    date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})
-  });
-  if(stats.history.length>10) stats.history=stats.history.slice(0,10);
-
-  saveStats();
-  updateStatsUI();
-
-  // Check for new badge
+  stats.history.unshift({idea:ideaText,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})});
+  if(stats.history.length>10)stats.history=stats.history.slice(0,10);
+  saveStats();updateStatsUI();
   checkNewBadge(stats.totalStories);
 }
 
@@ -412,73 +459,81 @@ function recordStoryFinished(ideaText){
 // BADGES
 // ============================================================
 const BADGES=[
-  {count:1,  icon:'⭐', name:'First Story!', desc:'You read your very first story!'},
-  {count:5,  icon:'🥉', name:'5 Stories!',   desc:'You\'ve read 5 whole stories!'},
-  {count:10, icon:'🥈', name:'10 Stories!',  desc:'10 stories — you\'re a real reader!'},
-  {count:25, icon:'🥇', name:'25 Stories!',  desc:'25 stories — reading superstar!'},
-  {count:50, icon:'🏆', name:'50 Stories!',  desc:'50 stories — you\'re a legend!'},
+  {count:1, icon:'⭐',name:'First Story!',desc:"You read your very first story!"},
+  {count:5, icon:'🥉',name:'5 Stories!', desc:"You've read 5 whole stories!"},
+  {count:10,icon:'🥈',name:'10 Stories!',desc:"10 stories — you're a real reader!"},
+  {count:25,icon:'🥇',name:'25 Stories!',desc:"25 stories — reading superstar!"},
+  {count:50,icon:'🏆',name:'50 Stories!',desc:"50 stories — you're a legend!"},
 ];
 
 function checkNewBadge(total){
   const badge=BADGES.find(b=>b.count===total);
-  if(badge){
-    setTimeout(()=>{
-      document.getElementById('badgeModalIcon').textContent=badge.icon;
-      document.getElementById('badgeModalTitle').textContent=badge.name;
-      document.getElementById('badgeModalDesc').textContent=badge.desc;
-      document.getElementById('badgeModal').classList.add('show');
-    },2000); // show after celebration settles
-  }
+  if(badge){setTimeout(()=>{document.getElementById('badgeModalIcon').textContent=badge.icon;document.getElementById('badgeModalTitle').textContent=badge.name;document.getElementById('badgeModalDesc').textContent=badge.desc;document.getElementById('badgeModal').classList.add('show');},2200);}
 }
-
 function closeBadgeModal(){document.getElementById('badgeModal').classList.remove('show');}
 
 function renderBadges(){
-  const row=document.getElementById('badgeRow');
-  row.innerHTML=BADGES.map(b=>{
+  document.getElementById('badgeRow').innerHTML=BADGES.map(b=>{
     const earned=stats.totalStories>=b.count;
-    return `<div class="badge ${earned?'earned':''}">
-      <span class="badge-icon">${b.icon}</span>
-      <span class="badge-name">${b.name}</span>
-    </div>`;
+    return `<div class="badge ${earned?'earned':''}"><span class="badge-icon">${b.icon}</span><span class="badge-name">${b.name}</span></div>`;
   }).join('');
 }
 
 function renderHistory(){
   const list=document.getElementById('historyList');
-  if(!stats.history.length){
-    list.innerHTML='<div class="history-empty">No stories yet — read one to get started!</div>';
-    return;
-  }
-  list.innerHTML=stats.history.map(h=>`
-    <div class="history-item">
-      <span>📖</span>
-      <span class="h-idea">${h.idea}</span>
-      <span class="h-date">${h.date}</span>
-    </div>
-  `).join('');
+  if(!stats.history.length){list.innerHTML='<div class="history-empty">No stories yet — read one to get started!</div>';return;}
+  list.innerHTML=stats.history.map(h=>`<div class="history-item"><span>📖</span><span class="h-idea">${h.idea}</span><span class="h-date">${h.date}</span></div>`).join('');
 }
 
 function updateStatsUI(){
   document.getElementById('streakNum').textContent=stats.streak;
   document.getElementById('totalNum').textContent=stats.totalStories;
-  // Make streak chip glow if streak > 1
-  document.getElementById('streakChip').classList.toggle('hot', stats.streak>0);
-  renderBadges();
-  renderHistory();
+  renderBadges();renderHistory();
 }
+
+// ============================================================
+// PWA INSTALL
+// ============================================================
+let deferredInstallPrompt=null;
+
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  // Show banner only if not already installed
+  if(!window.matchMedia('(display-mode: standalone)').matches){
+    document.getElementById('installBanner').style.display='flex';
+  }
+});
+
+async function installApp(){
+  if(!deferredInstallPrompt)return;
+  deferredInstallPrompt.prompt();
+  const result=await deferredInstallPrompt.userChoice;
+  if(result.outcome==='accepted')dismissInstall();
+  deferredInstallPrompt=null;
+}
+
+function dismissInstall(){
+  document.getElementById('installBanner').style.display='none';
+  try{localStorage.setItem('sr_install_dismissed','1');}catch(e){}
+}
+
+// Hide banner if already dismissed
+try{if(localStorage.getItem('sr_install_dismissed'))document.getElementById('installBanner').style.display='none';}catch(e){}
+
+// ============================================================
+// WPM / WORD COUNT
+// ============================================================
+const WPM={'1st grade':60,'2nd grade':90,'3rd grade':110,'4th grade':130,'5th grade':150};
+const MINUTES={short:5,medium:10,long:15};
+function getWordCount(){const wpm=WPM[settings.readingLevel]||110;const mins=MINUTES[settings.storyLength]||10;const t=wpm*mins;return`${Math.round(t*.9)}-${Math.round(t*1.1)}`;}
 
 // ============================================================
 // STATE
 // ============================================================
-const WPM={'1st grade':60,'2nd grade':90,'3rd grade':110,'4th grade':130,'5th grade':150};
-const MINUTES={short:5,medium:10,long:15};
-function getWordCount(){const wpm=WPM[settings.readingLevel]||110;const mins=MINUTES[settings.storyLength]||10;const t=wpm*mins;return `${Math.round(t*.9)}-${Math.round(t*1.1)}`;}
-
 let words=[],wordIndex=0,recognition=null,isListening=false;
 let ideaText='',ideaRecognition=null,ideaRecording=false;
-let pinEntry='';
-let currentIdeaForHistory='';
+let pinEntry='',currentIdeaForHistory='';
 
 // ============================================================
 // SCREENS
@@ -494,7 +549,7 @@ function showScreen(id){
 // ============================================================
 function initStars(){
   const c=document.getElementById('starsContainer');
-  for(let i=0;i<20;i++){const s=document.createElement('div');s.className='star';s.textContent='⭐';s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;font-size:${.7+Math.random()*.8}rem`;c.appendChild(s);}
+  for(let i=0;i<18;i++){const s=document.createElement('div');s.className='star';s.textContent='⭐';s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s;font-size:${.6+Math.random()*.7}rem`;c.appendChild(s);}
 }
 
 // ============================================================
@@ -509,7 +564,7 @@ function toggleIdeaRecording(){ideaRecording?stopIdeaRecording():startIdeaRecord
 
 function startIdeaRecording(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){document.getElementById('ideaMicHint').textContent='⚠️ Please open in Google Chrome!';return;}
+  if(!SR){document.getElementById('ideaMicHint').textContent='⚠️ Please open in Google Chrome or Safari!';return;}
   ideaRecording=true;ideaRecognition=new SR();ideaRecognition.continuous=true;ideaRecognition.interimResults=true;ideaRecognition.lang='en-US';
   const btn=document.getElementById('ideaMicBtn');btn.classList.add('recording');btn.textContent='⏹️';
   document.getElementById('ideaMicHint').textContent='🎤 Listening... tap again when done!';
@@ -528,7 +583,7 @@ function startIdeaRecording(){
 function stopIdeaRecording(){
   ideaRecording=false;if(ideaRecognition){try{ideaRecognition.stop();}catch(e){}ideaRecognition=null;}
   const btn=document.getElementById('ideaMicBtn');btn.classList.remove('recording');btn.textContent='🎤';
-  document.getElementById('ideaMicHint').textContent=ideaText?'Tap "Make my story!" when ready 👇':"Tap the mic to start — tap again when you're done!";
+  document.getElementById('ideaMicHint').textContent=ideaText?'Tap "Make my story!" when ready 👇':"Tap the mic to start — tap again when done!";
 }
 
 function handleTypedIdea(){
@@ -542,13 +597,10 @@ function clearIdea(){
   ideaText='';stopIdeaRecording();document.getElementById('ideaTyped').value='';
   const el=document.getElementById('ideaHeard');el.textContent='Your idea will appear here...';el.classList.add('empty');
   document.getElementById('makeStoryBtn').disabled=true;
-  document.getElementById('ideaMicHint').textContent="Tap the mic to start — tap again when you're done talking!";
+  document.getElementById('ideaMicHint').textContent="Tap the mic to start — tap again when you're done!";
 }
 
-function goToIdeaScreen(){
-  if(recognition){isListening=false;try{recognition.stop();}catch(e){}}
-  clearIdea();showScreen('screenIdea');
-}
+function goToIdeaScreen(){if(recognition){isListening=false;try{recognition.stop();}catch(e){}}clearIdea();showScreen('screenIdea');}
 
 // ============================================================
 // STORY GENERATION
@@ -586,7 +638,7 @@ Rules:
     loadStory(storyText,title);showScreen('screenReading');
   }catch(err){
     clearInterval(interval);
-    loadStory("Uh oh! The story magic had a little hiccup. Please press '← New Story Idea' below and try again.","Oops!");
+    loadStory("Uh oh! The story magic had a little hiccup. Please press 'New Story Idea' below and try again.","Oops!");
     showScreen('screenReading');
   }
 }
@@ -607,7 +659,7 @@ function loadStory(text,title){
   document.getElementById('micDot').classList.remove('active');document.getElementById('micStatus').classList.remove('listening');
   document.getElementById('micLabel').textContent='Press the button below to start reading';
   document.getElementById('heardBox').textContent='Your words will appear here as you read...';
-  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){document.getElementById('startBtn').disabled=true;document.getElementById('micLabel').textContent='⚠️ Please open this in Google Chrome!';}
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){document.getElementById('startBtn').disabled=true;document.getElementById('micLabel').textContent='⚠️ Please open in Chrome (Android) or Safari (iPhone)';}
 }
 
 // ============================================================
@@ -667,39 +719,27 @@ function resetReading(){
 // ============================================================
 function openParentGate(){pinEntry='';updatePinDots();document.getElementById('pinErrorMsg').textContent='';document.getElementById('pinModal').classList.add('show');}
 function closePinModal(){document.getElementById('pinModal').classList.remove('show');pinEntry='';updatePinDots();}
-
 function pinPress(digit){
-  if(pinEntry.length>=4)return;
-  pinEntry+=digit;updatePinDots();
+  if(pinEntry.length>=4)return;pinEntry+=digit;updatePinDots();
   if(pinEntry.length===4){
     if(pinEntry===settings.pin){closePinModal();openParentSettings();}
-    else{
-      document.querySelectorAll('.pin-dot').forEach(d=>d.classList.add('error'));
-      document.getElementById('pinErrorMsg').textContent='Wrong PIN — try again!';
-      setTimeout(()=>{pinEntry='';updatePinDots();document.querySelectorAll('.pin-dot').forEach(d=>d.classList.remove('error'));document.getElementById('pinErrorMsg').textContent='';},900);
-    }
+    else{document.querySelectorAll('.pin-dot').forEach(d=>d.classList.add('error'));document.getElementById('pinErrorMsg').textContent='Wrong PIN — try again!';setTimeout(()=>{pinEntry='';updatePinDots();document.querySelectorAll('.pin-dot').forEach(d=>d.classList.remove('error'));document.getElementById('pinErrorMsg').textContent='';},900);}
   }
 }
 function pinBackspace(){pinEntry=pinEntry.slice(0,-1);updatePinDots();}
 function updatePinDots(){for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.toggle('filled',i<pinEntry.length);}
-
 function openParentSettings(){
   document.querySelectorAll('#levelOptions .option-btn').forEach(btn=>btn.classList.toggle('selected',btn.textContent.trim().toLowerCase().startsWith(settings.readingLevel.split(' ')[0])));
   document.querySelectorAll('#lengthOptions .option-btn').forEach(btn=>btn.classList.toggle('selected',btn.textContent.trim().toLowerCase().startsWith(MINUTES[settings.storyLength]+'') ));
-  document.getElementById('prizeInput').value=settings.prize;
-  updatePrizePreview();document.getElementById('pinInput').value='';
+  document.getElementById('prizeInput').value=settings.prize;updatePrizePreview();document.getElementById('pinInput').value='';
   showScreen('screenParent');
 }
-
 function selectOption(type,value,el){
   const gid=type==='level'?'levelOptions':'lengthOptions';
-  document.querySelectorAll('#'+gid+' .option-btn').forEach(b=>b.classList.remove('selected'));
-  el.classList.add('selected');
+  document.querySelectorAll('#'+gid+' .option-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');
   if(type==='level')settings.readingLevel=value;else settings.storyLength=value;
 }
-
 function updatePrizePreview(){const val=document.getElementById('prizeInput').value.trim();document.getElementById('prizePreview').textContent=val?'🎁 Prize: '+val:'🎁 Prize will show here';}
-
 function saveSettings(){
   const pv=document.getElementById('prizeInput').value.trim();if(pv)settings.prize=pv;
   const pn=document.getElementById('pinInput').value.trim();
@@ -715,21 +755,15 @@ function saveSettings(){
 function celebrate(){
   isListening=false;if(recognition){try{recognition.stop();}catch(e){}}
   document.getElementById('micLabel').textContent='🎉 You did it! Amazing reading!';
-
-  // Record the finished story
   recordStoryFinished(currentIdeaForHistory);
-
-  // Update streak reveal text
-  document.getElementById('streakReveal').textContent=
-    stats.streak>1?`🔥 ${stats.streak} day streak! Keep it up!`:'🌟 Story #'+stats.totalStories+' complete!';
-
+  document.getElementById('streakReveal').textContent=stats.streak>1?`🔥 ${stats.streak} day streak! Keep it up!`:'🌟 Story #'+stats.totalStories+' complete!';
   setTimeout(()=>{document.getElementById('celebration').classList.add('show');launchConfetti();},600);
 }
 
 function launchConfetti(){
   const colors=['#FFD166','#FF6B6B','#06D6A0','#A78BFA','#6EC6F5'];
   if(!document.getElementById('fallStyle')){const s=document.createElement('style');s.id='fallStyle';s.textContent='@keyframes fall{to{top:110vh;transform:rotate(720deg)}}';document.head.appendChild(s);}
-  for(let i=0;i<60;i++){const p=document.createElement('div');p.style.cssText=`position:fixed;left:${Math.random()*100}%;top:-20px;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation:fall ${1.5+Math.random()*2}s ease-in forwards;animation-delay:${Math.random()*1.5}s;z-index:200;pointer-events:none`;document.body.appendChild(p);setTimeout(()=>p.remove(),4000);}
+  for(let i=0;i<60;i++){const p=document.createElement('div');p.style.cssText=`position:fixed;left:${Math.random()*100}%;top:-20px;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation:fall ${1.5+Math.random()*2}s ease-in forwards;animation-delay:${Math.random()*1.5}s;z-index:300;pointer-events:none`;document.body.appendChild(p);setTimeout(()=>p.remove(),4000);}
 }
 
 function closeAndNewStory(){document.getElementById('celebration').classList.remove('show');clearIdea();showScreen('screenIdea');}
@@ -737,11 +771,7 @@ function closeAndNewStory(){document.getElementById('celebration').classList.rem
 // ============================================================
 // INIT
 // ============================================================
-loadSettings();
-loadStats();
-initStars();
-warmUpMic();
-updateStatsUI();
+loadSettings();loadStats();initStars();warmUpMic();updateStatsUI();
 </script>
 </body>
 </html>
