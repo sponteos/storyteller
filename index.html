@@ -213,6 +213,8 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
   .stars{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden}
   .star{position:absolute;color:var(--sun);opacity:.12;animation:twinkle 3s ease-in-out infinite}
   @keyframes twinkle{0%,100%{opacity:.08;transform:scale(1)}50%{opacity:.25;transform:scale(1.3)}}
+  .word.speaking{background:var(--sky)!important;color:white!important;box-shadow:0 2px 10px rgba(110,198,245,.7)!important;animation:speak-pulse .6s ease-in-out!important}
+  @keyframes speak-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
 
   /* ---- RESPONSIVE ---- */
   @media(min-width:480px){
@@ -320,6 +322,7 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
       <button class="btn btn-secondary" id="resetBtn" onclick="resetReading()" style="display:none;margin-top:10px">🔄 Start Over</button>
       <div class="heard-box" id="heardBox" style="margin-top:10px">Your words will appear here as you read...</div>
       <div style="margin-top:16px">
+        <p style="font-size:.78rem;color:#bbb;font-weight:700;margin-bottom:8px;text-align:center">💡 Tap any word to hear it spoken aloud</p>
         <div class="story-box" id="storyDisplay"></div>
         <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
         <div class="progress-label" id="progressLabel">0% read</div>
@@ -654,7 +657,7 @@ function loadStory(text,title){
   document.getElementById('prizeEmojiDisplay').textContent=settings.prizeEmoji;
   document.getElementById('prizeReveal').textContent=settings.prizeEmoji+' You earned: '+settings.prize;
   words=text.split(/\s+/).map(w=>w.replace(/[^a-zA-Z']/g,'').toLowerCase()).filter(w=>w.length>0);
-  document.getElementById('storyDisplay').innerHTML=text.split(/\s+/).map((w,i)=>`<span class="word" id="word-${i}">${w} </span>`).join('');
+  document.getElementById('storyDisplay').innerHTML=text.split(/\s+/).map((w,i)=>`<span class="word" id="word-${i}" onclick="hearWord(${i})">${w} </span>`).join('');
   highlightCurrent();
   document.getElementById('startBtn').style.display='block';document.getElementById('resetBtn').style.display='none';
   document.getElementById('micDot').classList.remove('active');document.getElementById('micStatus').classList.remove('listening');
@@ -768,6 +771,29 @@ function launchConfetti(){
 }
 
 function closeAndNewStory(){document.getElementById('celebration').classList.remove('show');clearIdea();showScreen('screenIdea');}
+
+// ============================================================
+// TAP TO HEAR A WORD
+// ============================================================
+function hearWord(idx){
+  // Only speak current or upcoming words — not already-read ones
+  if(idx < wordIndex) return;
+  const el=document.getElementById('word-'+idx);
+  if(!el) return;
+  // Get the clean word text
+  const raw=el.textContent.trim().replace(/[^a-zA-Z']/g,'');
+  if(!raw) return;
+  // Cancel any current speech
+  window.speechSynthesis.cancel();
+  // Animate the word
+  el.classList.add('speaking');
+  setTimeout(()=>el.classList.remove('speaking'),700);
+  // Speak it
+  const utt=new SpeechSynthesisUtterance(raw);
+  utt.rate=0.85; // slightly slow so it's clear for kids
+  utt.pitch=1.1;
+  window.speechSynthesis.speak(utt);
+}
 
 // ============================================================
 // INIT
