@@ -313,11 +313,17 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
 
   <!-- SCREEN 3: READING -->
   <div class="screen" id="screenReading">
-    <div class="card">
+    <div class="card active-card">
       <div class="card-title"><div class="icon icon-yellow">📖</div><span id="storyTitle">Your Story</span></div>
-      <div class="story-box" id="storyDisplay"></div>
-      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
-      <div class="progress-label" id="progressLabel">0% read</div>
+      <div class="mic-status" id="micStatus"><div class="mic-dot" id="micDot"></div><span id="micLabel">Press the button below to start reading</span></div>
+      <button class="btn btn-primary" id="startBtn" onclick="startReading()">🎤 Start Reading Out Loud!</button>
+      <button class="btn btn-secondary" id="resetBtn" onclick="resetReading()" style="display:none;margin-top:10px">🔄 Start Over</button>
+      <div class="heard-box" id="heardBox" style="margin-top:10px">Your words will appear here as you read...</div>
+      <div style="margin-top:16px">
+        <div class="story-box" id="storyDisplay"></div>
+        <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="progress-label" id="progressLabel">0% read</div>
+      </div>
     </div>
     <div class="card">
       <div class="card-title"><div class="icon icon-yellow">🎁</div>Your Prize</div>
@@ -326,12 +332,7 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
         <div>Finish reading to earn: <strong id="prizeText">an ice cream cone!</strong></div>
       </div>
     </div>
-    <div class="card active-card">
-      <div class="card-title"><div class="icon icon-blue">🎤</div>Read Out Loud</div>
-      <div class="mic-status" id="micStatus"><div class="mic-dot" id="micDot"></div><span id="micLabel">Press the button below to start reading</span></div>
-      <div class="heard-box" id="heardBox">Your words will appear here as you read...</div>
-      <button class="btn btn-primary" id="startBtn" onclick="startReading()">🎤 Start Reading!</button>
-      <button class="btn btn-secondary" id="resetBtn" onclick="resetReading()" style="display:none">🔄 Start Over</button>
+    <div class="card">
       <button class="btn btn-ghost" onclick="goToIdeaScreen()">← New Story Idea</button>
     </div>
   </div>
