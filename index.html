@@ -775,24 +775,37 @@ function closeAndNewStory(){document.getElementById('celebration').classList.rem
 // ============================================================
 // TAP TO HEAR A WORD
 // ============================================================
+// Unlock speech synthesis on first user interaction (Chrome requires this)
+let speechUnlocked=false;
+function unlockSpeech(){
+  if(speechUnlocked) return;
+  const utt=new SpeechSynthesisUtterance('');
+  window.speechSynthesis.speak(utt);
+  speechUnlocked=true;
+}
+document.addEventListener('click', unlockSpeech, {once:true});
+
 function hearWord(idx){
   // Only speak current or upcoming words — not already-read ones
   if(idx < wordIndex) return;
   const el=document.getElementById('word-'+idx);
   if(!el) return;
   // Get the clean word text
-  const raw=el.textContent.trim().replace(/[^a-zA-Z']/g,'');
+  const raw=el.textContent.trim().replace(/[^a-zA-Z',-]/g,'');
   if(!raw) return;
   // Cancel any current speech
   window.speechSynthesis.cancel();
   // Animate the word
   el.classList.add('speaking');
-  setTimeout(()=>el.classList.remove('speaking'),700);
-  // Speak it
-  const utt=new SpeechSynthesisUtterance(raw);
-  utt.rate=0.85; // slightly slow so it's clear for kids
-  utt.pitch=1.1;
-  window.speechSynthesis.speak(utt);
+  setTimeout(()=>el.classList.remove('speaking'),800);
+  // Speak it — slight delay lets cancel() finish first
+  setTimeout(()=>{
+    const utt=new SpeechSynthesisUtterance(raw);
+    utt.rate=0.82;
+    utt.pitch=1.1;
+    utt.volume=1;
+    window.speechSynthesis.speak(utt);
+  },50);
 }
 
 // ============================================================
