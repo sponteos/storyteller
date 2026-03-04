@@ -319,7 +319,7 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
       <div class="card-title"><div class="icon icon-yellow">📖</div><span id="storyTitle">Your Story</span></div>
       <div class="mic-status" id="micStatus"><div class="mic-dot" id="micDot"></div><span id="micLabel">Press the button below to start reading</span></div>
       <button class="btn btn-primary" id="startBtn" onclick="startReading()">🎤 Start Reading Out Loud!</button>
-      <button class="btn btn-secondary" id="resetBtn" onclick="resetReading()" style="display:none;margin-top:10px">🔄 Start Over</button>
+      <button class="btn btn-secondary" id="pauseBtn" onclick="togglePause()" style="display:none;margin-top:10px">⏸️ Pause Reading</button>
       <div class="heard-box" id="heardBox" style="margin-top:10px">Your words will appear here as you read...</div>
       <div style="margin-top:16px">
         <p style="font-size:.78rem;color:#bbb;font-weight:700;margin-bottom:8px;text-align:center">💡 Tap any word to hear it spoken aloud</p>
@@ -535,7 +535,7 @@ function getWordCount(){const wpm=WPM[settings.readingLevel]||110;const mins=MIN
 // ============================================================
 // STATE
 // ============================================================
-let words=[],wordIndex=0,recognition=null,isListening=false;
+let words=[],wordIndex=0,recognition=null,isListening=false,isPaused=false;
 let ideaText='',ideaRecognition=null,ideaRecording=false;
 let pinEntry='',currentIdeaForHistory='';
 
@@ -659,7 +659,7 @@ function loadStory(text,title){
   words=text.split(/\s+/).map(w=>w.replace(/[^a-zA-Z']/g,'').toLowerCase()).filter(w=>w.length>0);
   document.getElementById('storyDisplay').innerHTML=text.split(/\s+/).map((w,i)=>`<span class="word" id="word-${i}" onclick="hearWord(${i})">${w} </span>`).join('');
   highlightCurrent();
-  document.getElementById('startBtn').style.display='block';document.getElementById('resetBtn').style.display='none';
+  document.getElementById('startBtn').style.display='block';document.getElementById('pauseBtn').style.display='none';
   document.getElementById('micDot').classList.remove('active');document.getElementById('micStatus').classList.remove('listening');
   document.getElementById('micLabel').textContent='Press the button below to start reading';
   document.getElementById('heardBox').textContent='Your words will appear here as you read...';
@@ -693,7 +693,7 @@ function startReading(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
   recognition=new SR();recognition.continuous=true;recognition.interimResults=true;recognition.lang='en-US';
   let consumed=0;
-  recognition.onstart=()=>{isListening=true;consumed=0;document.getElementById('micDot').classList.add('active');document.getElementById('micStatus').classList.add('listening');document.getElementById('micLabel').textContent='🎤 Listening... Read the highlighted word!';document.getElementById('startBtn').style.display='none';document.getElementById('resetBtn').style.display='block';skipTinyWords();highlightCurrent();};
+  recognition.onstart=()=>{isListening=true;consumed=0;document.getElementById('micDot').classList.add('active');document.getElementById('micStatus').classList.add('listening');document.getElementById('micLabel').textContent='🎤 Listening... Read the highlighted word!';document.getElementById('startBtn').style.display='none';document.getElementById('pauseBtn').style.display='block';skipTinyWords();highlightCurrent();};
   recognition.onresult=(event)=>{
     let full='';for(let i=0;i<event.results.length;i++)full+=event.results[i][0].transcript;
     document.getElementById('heardBox').textContent='🎧 Hearing: "'+full.trim().slice(-60)+'"';
@@ -705,17 +705,45 @@ function startReading(){
     }
   };
   recognition.onerror=(e)=>{if(e.error==='not-allowed')document.getElementById('micLabel').textContent='⚠️ Microphone blocked — please allow access!';};
-  recognition.onend=()=>{if(isListening&&wordIndex<words.length)recognition.start();};
+  recognition.onend=()=>{if(isListening&&!isPaused&&wordIndex<words.length)recognition.start();};
   recognition.start();
 }
 
+function togglePause(){
+  if(isPaused){
+    isPaused=false;
+    isListening=true;
+    document.getElementById('pauseBtn').textContent='⏸️ Pause Reading';
+    document.getElementById('pauseBtn').classList.remove('btn-primary');
+    document.getElementById('pauseBtn').classList.add('btn-secondary');
+    document.getElementById('micDot').classList.add('active');
+    document.getElementById('micStatus').classList.add('listening');
+    document.getElementById('micLabel').textContent='🎤 Listening... Read the highlighted word!';
+    if(recognition){try{recognition.start();}catch(e){}}
+  } else {
+    isPaused=true;
+    isListening=false;
+    if(recognition){try{recognition.stop();}catch(e){}}
+    document.getElementById('pauseBtn').textContent='▶️ Resume Reading';
+    document.getElementById('pauseBtn').classList.remove('btn-secondary');
+    document.getElementById('pauseBtn').classList.add('btn-primary');
+    document.getElementById('micDot').classList.remove('active');
+    document.getElementById('micStatus').classList.remove('listening');
+    document.getElementById('micLabel').textContent='⏸️ Paused — tap Resume when ready!';
+  }
+}
+
 function resetReading(){
+  isPaused=false;
   if(recognition){isListening=false;try{recognition.stop();}catch(e){}}
   wordIndex=0;document.querySelectorAll('.word').forEach(el=>el.classList.remove('read','current'));
   highlightCurrent();document.getElementById('micDot').classList.remove('active');document.getElementById('micStatus').classList.remove('listening');
   document.getElementById('micLabel').textContent='Press the button below to start reading';
   document.getElementById('heardBox').textContent='Your words will appear here as you read...';
-  document.getElementById('startBtn').style.display='block';document.getElementById('resetBtn').style.display='none';
+  document.getElementById('startBtn').style.display='block';document.getElementById('pauseBtn').style.display='none';
+  document.getElementById('pauseBtn').textContent='⏸️ Pause Reading';
+  document.getElementById('pauseBtn').classList.remove('btn-primary');
+  document.getElementById('pauseBtn').classList.add('btn-secondary');
 }
 
 // ============================================================
@@ -757,7 +785,7 @@ function saveSettings(){
 // CELEBRATION
 // ============================================================
 function celebrate(){
-  isListening=false;if(recognition){try{recognition.stop();}catch(e){}}
+  isListening=false;if(recognition){try{recognition.stop();}catch(e){}}document.getElementById('pauseBtn').style.display='none';
   document.getElementById('micLabel').textContent='🎉 You did it! Amazing reading!';
   recordStoryFinished(currentIdeaForHistory);
   document.getElementById('streakReveal').textContent=stats.streak>1?`🔥 ${stats.streak} day streak! Keep it up!`:'🌟 Story #'+stats.totalStories+' complete!';
