@@ -7,12 +7,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="StoryReader">
-<title>StoryReader ⭐</title>
+<meta name="apple-mobile-web-app-title" content="Story Reader">
+<title>Story Reader ⭐</title>
 
 <!-- PWA Manifest (inline) -->
 <script>
-const manifestData={name:"StoryReader",short_name:"StoryReader",description:"AI-powered reading adventure for kids!",start_url:"./",display:"standalone",background_color:"#FFFBF0",theme_color:"#6EC6F5",orientation:"portrait",icons:[{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="#6EC6F5"/><text y="130" x="96" font-size="110" text-anchor="middle">⭐</text></svg>'),sizes:"192x192",type:"image/svg+xml"},{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#6EC6F5"/><text y="360" x="256" font-size="300" text-anchor="middle">⭐</text></svg>'),sizes:"512x512",type:"image/svg+xml"}]};
+const manifestData={name:"Story Reader",short_name:"Story Reader",description:"AI-powered reading adventure for kids!",start_url:"./",display:"standalone",background_color:"#FFFBF0",theme_color:"#6EC6F5",orientation:"portrait",icons:[{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="#6EC6F5"/><text y="130" x="96" font-size="110" text-anchor="middle">⭐</text></svg>'),sizes:"192x192",type:"image/svg+xml"},{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#6EC6F5"/><text y="360" x="256" font-size="300" text-anchor="middle">⭐</text></svg>'),sizes:"512x512",type:"image/svg+xml"}]};
 const blob=new Blob([JSON.stringify(manifestData)],{type:"application/json"});
 const manifestURL=URL.createObjectURL(blob);
 document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement("link");l.rel="manifest";l.href=manifestURL;document.head.appendChild(l);});
@@ -213,6 +213,17 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
   .stars{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden}
   .star{position:absolute;color:var(--sun);opacity:.12;animation:twinkle 3s ease-in-out infinite}
   @keyframes twinkle{0%,100%{opacity:.08;transform:scale(1)}50%{opacity:.25;transform:scale(1.3)}}
+
+  /* ---- LOGIN SCREEN ---- */
+  .login-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;padding-top:calc(var(--safe-top) + 24px);padding-bottom:calc(var(--safe-bottom) + 24px)}
+  .login-card{background:white;border-radius:28px;padding:36px 28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.12);text-align:center}
+  .login-card .login-emoji{font-size:4rem;display:block;margin-bottom:12px;animation:float 3s ease-in-out infinite}
+  .login-card h2{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--ink);margin-bottom:6px}
+  .login-card p{font-size:.95rem;color:#888;font-weight:600;margin-bottom:24px;line-height:1.5}
+  .login-input{width:100%;padding:16px 18px;border-radius:16px;border:2.5px solid #e0e0e0;font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:800;color:var(--ink);outline:none;transition:border-color .2s;text-align:center;letter-spacing:2px;text-transform:uppercase;-webkit-appearance:none}
+  .login-input:focus{border-color:var(--purple)}
+  .login-input::placeholder{letter-spacing:0;text-transform:none;font-weight:600;color:#ccc}
+  .login-error{color:var(--coral);font-weight:800;font-size:.9rem;min-height:22px;margin:10px 0 4px}
   .word.speaking{background:var(--sky)!important;color:white!important;box-shadow:0 2px 10px rgba(110,198,245,.7)!important;animation:speak-pulse .6s ease-in-out!important}
   @keyframes speak-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
 
@@ -237,9 +248,30 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
 </div>
 <div class="stars" id="starsContainer"></div>
 
-<div class="container">
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" style="display:none">
+  <div class="sky">
+    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+    <div class="sun-icon"></div>
+  </div>
+  <div class="login-wrap">
+    <div class="login-card">
+      <span class="login-emoji">📚</span>
+      <h2>Welcome to Story Reader!</h2>
+      <p>Ask a grown-up for your family code to get started</p>
+      <input class="login-input" type="text" id="codeInput" placeholder="Enter your family code"
+        autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter')submitCode()" />
+      <div class="login-error" id="loginError"></div>
+      <button class="btn btn-purple" onclick="submitCode()" style="width:100%;margin-top:4px">Let's Read! ✨</button>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="mainApp" style="display:none">
   <div class="header">
-    <h1>⭐ StoryReader</h1>
+    <h1>⭐ Story Reader</h1>
     <p>Your story, your adventure!</p>
     <button class="parent-btn" onclick="openParentGate()" title="Parent Settings">⚙️</button>
   </div>
@@ -252,7 +284,7 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
       <span class="ib-icon">📲</span>
       <div class="ib-text">
         <div class="ib-title">Add to Home Screen</div>
-        <div class="ib-sub">Launch like a real app — no browser bar!</div>
+        <div class="ib-sub">Launch like a real app  -  no browser bar!</div>
       </div>
       <button class="ib-btn" onclick="installApp()">Install</button>
       <button class="ib-close" onclick="dismissInstall()">✕</button>
@@ -276,10 +308,10 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
         <h2>What's your story about?</h2>
         <p>Press the mic button and talk about what you want your story to be!</p>
       </div>
-      <p class="mic-hint" id="ideaMicHint">Tap the mic to start — tap again when you're done!</p>
+      <p class="mic-hint" id="ideaMicHint">Tap the mic to start  -  tap again when you're done!</p>
       <button class="mic-big-btn" id="ideaMicBtn" onclick="toggleIdeaRecording()">🎤</button>
       <div class="idea-heard empty" id="ideaHeard">Your idea will appear here...</div>
-      <div class="divider">— or type your idea instead —</div>
+      <div class="divider"> -  or type your idea instead  - </div>
       <input class="idea-input" type="text" id="ideaTyped" placeholder="e.g. a dragon who loves to bake cookies..." oninput="handleTypedIdea()" autocomplete="off" autocorrect="off" autocapitalize="sentences" />
       <button class="btn btn-purple" id="makeStoryBtn" onclick="generateStory()" disabled style="margin-top:16px">✨ Make my story!</button>
       <button class="btn btn-ghost" onclick="clearIdea()">🔄 Try again</button>
@@ -378,6 +410,8 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
   </div>
 </div>
 
+</div><!-- end mainApp -->
+
 <!-- PIN MODAL -->
 <div class="modal" id="pinModal">
   <div class="modal-card">
@@ -430,6 +464,41 @@ document.addEventListener("DOMContentLoaded",()=>{const l=document.createElement
 
 <script>
 // ============================================================
+// LOGIN
+// ============================================================
+const VALID_CODES=['VERSION123','RISHI123','JACK123','STRIPE123'];
+
+function checkLogin(){
+  try{
+    const saved=localStorage.getItem('sr_code');
+    if(saved && VALID_CODES.includes(saved)){
+      showApp();
+    } else {
+      document.getElementById('loginScreen').style.display='block';
+    }
+  } catch(e){
+    document.getElementById('loginScreen').style.display='block';
+  }
+}
+
+function submitCode(){
+  const val=document.getElementById('codeInput').value.trim().toUpperCase();
+  if(VALID_CODES.includes(val)){
+    try{localStorage.setItem('sr_code',val);}catch(e){}
+    document.getElementById('loginError').textContent='';
+    showApp();
+  } else {
+    document.getElementById('loginError').textContent='Hmm, that code doesn't match  -  try again!';
+    document.getElementById('codeInput').select();
+  }
+}
+
+function showApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+}
+
+// ============================================================
 // SETTINGS
 // ============================================================
 const DEFAULT_SETTINGS={readingLevel:'3rd grade',storyLength:'medium',prize:'an ice cream cone!',prizeEmoji:'🍦',pin:'1234'};
@@ -465,9 +534,9 @@ function recordStoryFinished(ideaText){
 const BADGES=[
   {count:1, icon:'⭐',name:'First Story!',desc:"You read your very first story!"},
   {count:5, icon:'🥉',name:'5 Stories!', desc:"You've read 5 whole stories!"},
-  {count:10,icon:'🥈',name:'10 Stories!',desc:"10 stories — you're a real reader!"},
-  {count:25,icon:'🥇',name:'25 Stories!',desc:"25 stories — reading superstar!"},
-  {count:50,icon:'🏆',name:'50 Stories!',desc:"50 stories — you're a legend!"},
+  {count:10,icon:'🥈',name:'10 Stories!',desc:"10 stories  -  you're a real reader!"},
+  {count:25,icon:'🥇',name:'25 Stories!',desc:"25 stories  -  reading superstar!"},
+  {count:50,icon:'🏆',name:'50 Stories!',desc:"50 stories  -  you're a legend!"},
 ];
 
 function checkNewBadge(total){
@@ -485,7 +554,7 @@ function renderBadges(){
 
 function renderHistory(){
   const list=document.getElementById('historyList');
-  if(!stats.history.length){list.innerHTML='<div class="history-empty">No stories yet — read one to get started!</div>';return;}
+  if(!stats.history.length){list.innerHTML='<div class="history-empty">No stories yet  -  read one to get started!</div>';return;}
   list.innerHTML=stats.history.map(h=>`<div class="history-item"><span>📖</span><span class="h-idea">${h.idea}</span><span class="h-date">${h.date}</span></div>`).join('');
 }
 
@@ -579,7 +648,7 @@ function startIdeaRecording(){
     document.getElementById('ideaTyped').value=ideaText;
     document.getElementById('makeStoryBtn').disabled=ideaText.length<3;
   };
-  ideaRecognition.onerror=(e)=>{if(e.error!=='aborted')document.getElementById('ideaMicHint').textContent='⚠️ Mic error — try typing instead!';ideaRecording=false;btn.classList.remove('recording');btn.textContent='🎤';};
+  ideaRecognition.onerror=(e)=>{if(e.error!=='aborted')document.getElementById('ideaMicHint').textContent='⚠️ Mic error  -  try typing instead!';ideaRecording=false;btn.classList.remove('recording');btn.textContent='🎤';};
   ideaRecognition.onend=()=>{if(ideaRecording){try{ideaRecognition.start();}catch(e){}}};
   ideaRecognition.start();
 }
@@ -587,7 +656,7 @@ function startIdeaRecording(){
 function stopIdeaRecording(){
   ideaRecording=false;if(ideaRecognition){try{ideaRecognition.stop();}catch(e){}ideaRecognition=null;}
   const btn=document.getElementById('ideaMicBtn');btn.classList.remove('recording');btn.textContent='🎤';
-  document.getElementById('ideaMicHint').textContent=ideaText?'Tap "Make my story!" when ready 👇':"Tap the mic to start — tap again when done!";
+  document.getElementById('ideaMicHint').textContent=ideaText?'Tap "Make my story!" when ready 👇':"Tap the mic to start  -  tap again when done!";
 }
 
 function handleTypedIdea(){
@@ -601,7 +670,7 @@ function clearIdea(){
   ideaText='';stopIdeaRecording();document.getElementById('ideaTyped').value='';
   const el=document.getElementById('ideaHeard');el.textContent='Your idea will appear here...';el.classList.add('empty');
   document.getElementById('makeStoryBtn').disabled=true;
-  document.getElementById('ideaMicHint').textContent="Tap the mic to start — tap again when you're done!";
+  document.getElementById('ideaMicHint').textContent="Tap the mic to start  -  tap again when you're done!";
 }
 
 function goToIdeaScreen(){if(recognition){isListening=false;try{recognition.stop();}catch(e){}}clearIdea();showScreen('screenIdea');}
@@ -704,7 +773,7 @@ function startReading(){
       for(let look=1;look<=3&&(wordIndex+look)<words.length;look++){if(isMatch(s,words[wordIndex+look])){wordIndex+=look+1;skipTinyWords();highlightCurrent();consumed=full.length;if(wordIndex>=words.length){celebrate();return;}break;}}
     }
   };
-  recognition.onerror=(e)=>{if(e.error==='not-allowed')document.getElementById('micLabel').textContent='⚠️ Microphone blocked — please allow access!';};
+  recognition.onerror=(e)=>{if(e.error==='not-allowed')document.getElementById('micLabel').textContent='⚠️ Microphone blocked  -  please allow access!';};
   recognition.onend=()=>{if(isListening&&!isPaused&&wordIndex<words.length)recognition.start();};
   recognition.start();
 }
@@ -729,7 +798,7 @@ function togglePause(){
     document.getElementById('pauseBtn').classList.add('btn-primary');
     document.getElementById('micDot').classList.remove('active');
     document.getElementById('micStatus').classList.remove('listening');
-    document.getElementById('micLabel').textContent='⏸️ Paused — tap Resume when ready!';
+    document.getElementById('micLabel').textContent='⏸️ Paused  -  tap Resume when ready!';
   }
 }
 
@@ -755,7 +824,7 @@ function pinPress(digit){
   if(pinEntry.length>=4)return;pinEntry+=digit;updatePinDots();
   if(pinEntry.length===4){
     if(pinEntry===settings.pin){closePinModal();openParentSettings();}
-    else{document.querySelectorAll('.pin-dot').forEach(d=>d.classList.add('error'));document.getElementById('pinErrorMsg').textContent='Wrong PIN — try again!';setTimeout(()=>{pinEntry='';updatePinDots();document.querySelectorAll('.pin-dot').forEach(d=>d.classList.remove('error'));document.getElementById('pinErrorMsg').textContent='';},900);}
+    else{document.querySelectorAll('.pin-dot').forEach(d=>d.classList.add('error'));document.getElementById('pinErrorMsg').textContent='Wrong PIN  -  try again!';setTimeout(()=>{pinEntry='';updatePinDots();document.querySelectorAll('.pin-dot').forEach(d=>d.classList.remove('error'));document.getElementById('pinErrorMsg').textContent='';},900);}
   }
 }
 function pinBackspace(){pinEntry=pinEntry.slice(0,-1);updatePinDots();}
@@ -814,7 +883,7 @@ function unlockSpeech(){
 document.addEventListener('click', unlockSpeech, {once:true});
 
 function hearWord(idx){
-  // Only speak current or upcoming words — not already-read ones
+  // Only speak current or upcoming words  -  not already-read ones
   if(idx < wordIndex) return;
   const el=document.getElementById('word-'+idx);
   if(!el) return;
@@ -826,7 +895,7 @@ function hearWord(idx){
   // Animate the word
   el.classList.add('speaking');
   setTimeout(()=>el.classList.remove('speaking'),800);
-  // Speak it — slight delay lets cancel() finish first
+  // Speak it  -  slight delay lets cancel() finish first
   setTimeout(()=>{
     const utt=new SpeechSynthesisUtterance(raw);
     utt.rate=0.82;
@@ -839,7 +908,7 @@ function hearWord(idx){
 // ============================================================
 // INIT
 // ============================================================
-loadSettings();loadStats();initStars();warmUpMic();updateStatsUI();
+loadSettings();loadStats();initStars();warmUpMic();updateStatsUI();checkLogin();
 </script>
 </body>
 </html>
